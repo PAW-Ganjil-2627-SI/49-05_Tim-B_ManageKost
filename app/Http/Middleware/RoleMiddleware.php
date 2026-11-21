@@ -16,7 +16,7 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
-        if (! $user->hasRole(...$roles)) {
+        if ($roles !== [] && ! $user->hasRole(...$roles)) {
             abort(403, 'Anda tidak memiliki hak akses untuk peran ini.');
         }
 

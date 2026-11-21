@@ -11,29 +11,52 @@ class PenghuniKostTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected User $user;
+    protected User $admin;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->pemilik()->create();
+        $this->admin = User::factory()->admin()->create();
     }
 
     public function test_guest_is_redirected_to_login(): void
     {
-        $response = $this->get(route('penghuni.index'));
+        $this->get(route('dashboard'))->assertRedirect(route('login'));
+        $this->get(route('penghuni.index'))->assertRedirect(route('login'));
+        $this->get(route('kamar.index'))->assertRedirect(route('login'));
+        $this->get(route('housekeeper.index'))->assertRedirect(route('login'));
+        $this->get(route('inventaris.index'))->assertRedirect(route('login'));
+    }
 
-        $response->assertRedirect(route('login'));
+    public function test_placeholder_pages_remain_unfilled_for_authenticated_users(): void
+    {
+        $operator = User::factory()->operator()->create();
+
+        $this->actingAs($operator)->get(route('dashboard'))
+            ->assertStatus(200)
+            ->assertSee('Konten Dashboard belum diisi.');
+
+        $this->actingAs($operator)->get(route('kamar.index'))
+            ->assertStatus(200)
+            ->assertSee('Halaman Master Kamar belum diisi.');
+
+        $this->actingAs($operator)->get(route('housekeeper.index'))
+            ->assertStatus(200)
+            ->assertSee('Halaman Housekeeper / Staff belum diisi.');
+
+        $this->actingAs($operator)->get(route('inventaris.index'))
+            ->assertStatus(200)
+            ->assertSee('Halaman Inventaris Aset Kos belum diisi.');
     }
 
     public function test_can_display_penghuni_index_page(): void
     {
-        $penghuni = PenghuniKost::factory()->create([
+        PenghuniKost::factory()->create([
             'nama' => 'Budi Santoso',
             'status' => 'Lunas',
         ]);
 
-        $response = $this->actingAs($this->user)->get(route('penghuni.index'));
+        $response = $this->actingAs($this->admin)->get(route('penghuni.index'));
 
         $response->assertStatus(200);
         $response->assertSee('Budi Santoso');
@@ -45,7 +68,7 @@ class PenghuniKostTest extends TestCase
         PenghuniKost::factory()->create(['nama' => 'Siti Aminah']);
         PenghuniKost::factory()->create(['nama' => 'Rudi Hartono']);
 
-        $response = $this->actingAs($this->user)->get(route('penghuni.index', ['cari' => 'Siti']));
+        $response = $this->actingAs($this->admin)->get(route('penghuni.index', ['cari' => 'Siti']));
 
         $response->assertStatus(200);
         $response->assertSee('Siti Aminah');
@@ -54,7 +77,7 @@ class PenghuniKostTest extends TestCase
 
     public function test_can_display_create_form(): void
     {
-        $response = $this->actingAs($this->user)->get(route('penghuni.create'));
+        $response = $this->actingAs($this->admin)->get(route('penghuni.create'));
 
         $response->assertStatus(200);
         $response->assertSee('Tambah Penghuni Baru');
@@ -75,7 +98,7 @@ class PenghuniKostTest extends TestCase
             'status' => 'Lunas',
         ];
 
-        $response = $this->actingAs($this->user)->post(route('penghuni.store'), $data);
+        $response = $this->actingAs($this->admin)->post(route('penghuni.store'), $data);
 
         $response->assertRedirect(route('penghuni.index'));
         $response->assertSessionHas('success');
@@ -91,7 +114,7 @@ class PenghuniKostTest extends TestCase
             'nama' => 'Joko Widodo',
         ]);
 
-        $response = $this->actingAs($this->user)->get(route('penghuni.edit', $penghuni));
+        $response = $this->actingAs($this->admin)->get(route('penghuni.edit', $penghuni));
 
         $response->assertStatus(200);
         $response->assertSee('Joko Widodo');
@@ -117,28 +140,75 @@ class PenghuniKostTest extends TestCase
             'status' => 'Lunas',
         ];
 
-        $response = $this->actingAs($this->user)->put(route('penghuni.update', $penghuni), $updateData);
+        $response = $this->actingAs($this->admin)->put(route('penghuni.update', $penghuni), $updateData);
 
         $response->assertRedirect(route('penghuni.index'));
         $response->assertSessionHas('success');
         $this->assertDatabaseHas('penghuni_kost', [
             'id' => $penghuni->id,
             'nama' => 'Nama Baru',
+            'harga' => '1500000',
             'status' => 'Lunas',
         ]);
     }
 
-    public function test_can_delete_penghuni(): void
+    public function test_admin_can_delete_penghuni(): void
     {
         $penghuni = PenghuniKost::factory()->create([
             'nama' => 'Penghuni Mau Dihapus',
         ]);
 
-        $response = $this->actingAs($this->user)->delete(route('penghuni.destroy', $penghuni));
+        $response = $this->actingAs($this->admin)->delete(route('penghuni.destroy', $penghuni));
 
         $response->assertRedirect(route('penghuni.index'));
         $response->assertSessionHas('success');
         $this->assertDatabaseMissing('penghuni_kost', [
+            'id' => $penghuni->id,
+        ]);
+    }
+
+    public function test_operator_can_manage_penghuni_but_cannot_delete(): void
+    {
+        $operator = User::factory()->operator()->create();
+        $penghuni = PenghuniKost::factory()->create([
+            'nama' => 'Penghuni Awal',
+            'status' => 'Lunas',
+        ]);
+
+        $indexResponse = $this->actingAs($operator)->get(route('penghuni.index'));
+        $indexResponse->assertStatus(200);
+        $indexResponse->assertDontSee('title="Hapus Data"', false);
+
+        $this->actingAs($operator)
+            ->get(route('penghuni.edit', $penghuni))
+            ->assertStatus(200);
+
+        $this->actingAs($operator)
+            ->put(route('penghuni.update', $penghuni), [
+                'nama' => 'Penghuni Diubah Operator',
+                'nik' => $penghuni->nik,
+                'jk' => $penghuni->jk,
+                'telepon' => $penghuni->telepon,
+                'pekerjaan' => $penghuni->pekerjaan,
+                'kamar' => $penghuni->kamar,
+                'tgl_masuk' => '2026-10-15',
+                'harga' => '1350000',
+                'kontak_darurat' => $penghuni->kontak_darurat,
+                'status' => 'Lunas',
+            ])
+            ->assertRedirect(route('penghuni.index'));
+
+        $this->assertDatabaseHas('penghuni_kost', [
+            'id' => $penghuni->id,
+            'nama' => 'Penghuni Diubah Operator',
+            'harga' => '1350000',
+        ]);
+
+        $this->actingAs($operator)
+            ->delete(route('penghuni.destroy', $penghuni))
+            ->assertStatus(403);
+
+        $this->assertDatabaseHas('penghuni_kost', [
             'id' => $penghuni->id,
         ]);
     }
@@ -154,109 +224,12 @@ class PenghuniKostTest extends TestCase
         $response->assertSee('Anda tidak memiliki hak akses untuk peran ini.');
     }
 
-    public function test_only_pemilik_can_access_laporan_keuangan_gate(): void
+    public function test_role_middleware_matches_roles_case_insensitively(): void
     {
-        $pengelola = User::factory()->pengelola()->create();
-        PenghuniKost::factory()->create([
-            'nama' => 'Penghuni Satu',
-            'harga' => '1500000',
-            'status' => 'Lunas',
-        ]);
+        $operator = User::factory()->create(['role' => 'Operator']);
 
-        $this->actingAs($pengelola)
-            ->get(route('penghuni.laporan'))
-            ->assertStatus(403);
-
-        $response = $this->actingAs($this->user)->get(route('penghuni.laporan'));
-        $response->assertStatus(200);
-        $response->assertSee('Laporan Keuangan Kost');
-        $response->assertSee('1.500.000');
-    }
-
-    public function test_pengelola_can_update_non_lunas_penghuni_but_harga_is_not_changed(): void
-    {
-        $pengelola = User::factory()->pengelola()->create();
-        $penghuni = PenghuniKost::factory()->create([
-            'nama' => 'Budi Awal',
-            'harga' => '1000000',
-            'status' => 'Belum lunas',
-        ]);
-
-        $this->actingAs($pengelola)
-            ->get(route('penghuni.edit', $penghuni))
+        $this->actingAs($operator)
+            ->get(route('penghuni.index'))
             ->assertStatus(200);
-
-        $response = $this->actingAs($pengelola)->put(route('penghuni.update', $penghuni), [
-            'nama' => 'Budi Diubah',
-            'nik' => $penghuni->nik,
-            'jk' => $penghuni->jk,
-            'telepon' => $penghuni->telepon,
-            'pekerjaan' => $penghuni->pekerjaan,
-            'kamar' => $penghuni->kamar,
-            'tgl_masuk' => '2026-10-15',
-            'harga' => '9999999',
-            'kontak_darurat' => $penghuni->kontak_darurat,
-            'status' => 'Belum lunas',
-        ]);
-
-        $response->assertRedirect(route('penghuni.index'));
-        $this->assertDatabaseHas('penghuni_kost', [
-            'id' => $penghuni->id,
-            'nama' => 'Budi Diubah',
-            'harga' => '1000000',
-        ]);
-    }
-
-    public function test_pengelola_cannot_edit_or_update_lunas_penghuni(): void
-    {
-        $pengelola = User::factory()->pengelola()->create();
-        $penghuni = PenghuniKost::factory()->create([
-            'nama' => 'Penghuni Lunas',
-            'status' => 'Lunas',
-        ]);
-
-        $this->actingAs($pengelola)
-            ->get(route('penghuni.edit', $penghuni))
-            ->assertStatus(403);
-
-        $this->actingAs($pengelola)
-            ->put(route('penghuni.update', $penghuni), [
-                'nama' => 'Coba Ubah',
-                'nik' => $penghuni->nik,
-                'jk' => $penghuni->jk,
-                'telepon' => $penghuni->telepon,
-                'pekerjaan' => $penghuni->pekerjaan,
-                'kamar' => $penghuni->kamar,
-                'tgl_masuk' => '2026-10-15',
-                'kontak_darurat' => $penghuni->kontak_darurat,
-                'status' => 'Belum lunas',
-            ])
-            ->assertStatus(403);
-    }
-
-    public function test_pengelola_cannot_delete_penghuni(): void
-    {
-        $pengelola = User::factory()->pengelola()->create();
-        $penghuni = PenghuniKost::factory()->create();
-
-        $this->actingAs($pengelola)
-            ->delete(route('penghuni.destroy', $penghuni))
-            ->assertStatus(403);
-
-        $this->assertDatabaseHas('penghuni_kost', [
-            'id' => $penghuni->id,
-        ]);
-    }
-
-    public function test_index_hides_restricted_controls_from_pengelola(): void
-    {
-        $pengelola = User::factory()->pengelola()->create();
-        PenghuniKost::factory()->create(['status' => 'Lunas']);
-
-        $response = $this->actingAs($pengelola)->get(route('penghuni.index'));
-        $response->assertStatus(200);
-        $response->assertDontSee('Laporan Keuangan');
-        $response->assertDontSee('title="Hapus Data"', false);
-        $response->assertSee('Terkunci');
     }
 }

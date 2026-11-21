@@ -11,17 +11,11 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    /**
-     * Menampilkan form login.
-     */
     public function showLoginForm(): View
     {
         return view('auth.login');
     }
 
-    /**
-     * Memproses autentikasi pengguna saat login.
-     */
     public function login(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
@@ -34,7 +28,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('penghuni.index'))
+            return redirect()->intended(route('dashboard'))
                 ->with('success', 'Selamat datang kembali, '.Auth::user()->name.'!');
         }
 
@@ -43,17 +37,11 @@ class AuthController extends Controller
             ->onlyInput('email');
     }
 
-    /**
-     * Menampilkan form registrasi pengguna baru.
-     */
     public function showRegisterForm(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Menyimpan data pengguna baru dan otomatis login.
-     */
     public function register(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -66,18 +54,16 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => 'pengelola',
+            'role' => 'operator',
         ]);
 
         Auth::login($user);
+        $request->session()->regenerate();
 
-        return redirect()->route('penghuni.index')
+        return redirect()->route('dashboard')
             ->with('success', 'Pendaftaran akun berhasil! Anda otomatis masuk.');
     }
 
-    /**
-     * Mengeluarkan pengguna (logout) dari sistem.
-     */
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();

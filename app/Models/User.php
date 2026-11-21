@@ -19,7 +19,27 @@ class User extends Authenticatable
 
     public function hasRole(string ...$roles): bool
     {
-        return in_array($this->role, $roles, true);
+        $userRole = strtolower((string) $this->role);
+
+        foreach ($roles as $role) {
+            if ($userRole === strtolower(trim($role))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function initials(): string
+    {
+        $parts = preg_split('/\s+/', trim((string) $this->name)) ?: [];
+        $initials = '';
+
+        foreach (array_slice($parts, 0, 2) as $part) {
+            $initials .= strtoupper(substr($part, 0, 1));
+        }
+
+        return $initials !== '' ? $initials : 'US';
     }
 
     /**

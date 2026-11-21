@@ -16,35 +16,36 @@ class AuthTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertStatus(200);
-        $response->assertSee('Masuk ke KostManager');
-        $response->assertSee('admin@kost.com');
+        $response->assertSee('Masuk ke Sistem');
+        $response->assertSee('KosManage');
+        $response->assertSee('admin@kosmanage.id');
     }
 
     public function test_user_can_login_with_correct_credentials(): void
     {
-        $user = User::factory()->create([
-            'email' => 'admin@kost.com',
+        $user = User::factory()->admin()->create([
+            'email' => 'admin@kosmanage.id',
             'password' => Hash::make('password123'),
         ]);
 
-        $response = $this->post(route('login'), [
-            'email' => 'admin@kost.com',
+        $response = $this->post(route('login.post'), [
+            'email' => 'admin@kosmanage.id',
             'password' => 'password123',
         ]);
 
-        $response->assertRedirect(route('penghuni.index'));
+        $response->assertRedirect(route('dashboard'));
         $this->assertAuthenticatedAs($user);
     }
 
     public function test_user_cannot_login_with_incorrect_password(): void
     {
         User::factory()->create([
-            'email' => 'admin@kost.com',
+            'email' => 'admin@kosmanage.id',
             'password' => Hash::make('password123'),
         ]);
 
-        $response = $this->post(route('login'), [
-            'email' => 'admin@kost.com',
+        $response = $this->post(route('login.post'), [
+            'email' => 'admin@kosmanage.id',
             'password' => 'wrong-password',
         ]);
 
@@ -57,22 +58,23 @@ class AuthTest extends TestCase
         $response = $this->get(route('register'));
 
         $response->assertStatus(200);
-        $response->assertSee('Daftar Akun Baru');
+        $response->assertSee('Buat Akun Baru');
+        $response->assertSee('KosManage');
     }
 
     public function test_new_user_can_register(): void
     {
-        $response = $this->post(route('register'), [
-            'name' => 'Budi Pengelola',
-            'email' => 'budi@kost.com',
+        $response = $this->post(route('register.post'), [
+            'name' => 'Budi Operator',
+            'email' => 'budi@kosmanage.id',
             'password' => 'secret123',
             'password_confirmation' => 'secret123',
         ]);
 
-        $response->assertRedirect(route('penghuni.index'));
+        $response->assertRedirect(route('dashboard'));
         $this->assertDatabaseHas('users', [
-            'email' => 'budi@kost.com',
-            'role' => 'pengelola',
+            'email' => 'budi@kosmanage.id',
+            'role' => 'operator',
         ]);
         $this->assertAuthenticated();
     }

@@ -11,26 +11,23 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         User::updateOrCreate(
-            ['email' => 'admin@kost.com'],
+            ['email' => 'admin@kosmanage.id'],
             [
-                'name' => 'Pemilik Kost',
+                'name' => 'Administrator Kos',
                 'password' => Hash::make('password123'),
-                'role' => 'pemilik',
+                'role' => 'admin',
             ]
         );
 
         User::updateOrCreate(
-            ['email' => 'staff@kost.com'],
+            ['email' => 'operator@kosmanage.id'],
             [
-                'name' => 'Pengelola Kost',
+                'name' => 'Operator Kos',
                 'password' => Hash::make('password123'),
-                'role' => 'pengelola',
+                'role' => 'operator',
             ]
         );
 
