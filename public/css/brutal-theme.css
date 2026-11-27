@@ -1,0 +1,576 @@
+/* ==========================================================================
+   KosManage — Simple Soft Neo-Brutalism Theme for Bootstrap 5.3
+   Palet warna minimal: Off-white (#F6F5F1), White (#FFFFFF), Charcoal (#18181B),
+   dan 1 Aksen Utama (#FACC15).
+   Semua styling langsung menargetkan class standar Bootstrap agar kode lama
+   bisa langsung dipakai tanpa mengubah struktur HTML.
+   ========================================================================== */
+
+:root {
+    --km-bg: #F6F5F1;
+    --km-surface: #FFFFFF;
+    --km-surface-subtle: #FAF9F6;
+    --km-ink: #18181B;
+    --km-muted: #52525B;
+    --km-border-soft: #E4E4E7;
+    --km-accent: #FACC15;
+    --km-accent-hover: #EAB308;
+    --km-border: 2px solid #18181B;
+    --km-shadow: 3px 3px 0px #18181B;
+    --km-shadow-sm: 2px 2px 0px #18181B;
+
+    /* Override Bootstrap CSS Variables */
+    --bs-font-sans-serif: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --bs-body-bg: var(--km-bg);
+    --bs-body-color: var(--km-ink);
+    --bs-border-color: var(--km-ink);
+    --bs-border-radius: 6px;
+    --bs-border-radius-lg: 8px;
+    --bs-border-radius-sm: 4px;
+    --bs-primary: #FACC15;
+    --bs-primary-rgb: 250, 204, 21;
+    --bs-link-color: #18181B;
+    --bs-link-hover-color: #000000;
+}
+
+body {
+    background-color: var(--km-bg);
+    color: var(--km-ink);
+    font-family: var(--bs-font-sans-serif);
+    -webkit-font-smoothing: antialiased;
+}
+
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   Layout Shell: Sidebar & Topbar
+   -------------------------------------------------------------------------- */
+.app-wrapper {
+    min-height: 100vh;
+    display: flex;
+}
+
+.app-sidebar {
+    width: 264px;
+    flex-shrink: 0;
+    background-color: var(--km-surface);
+    border-right: var(--km-border);
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 992px) {
+    .app-sidebar.offcanvas-lg {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        width: 264px !important;
+        flex-grow: 0;
+        background-color: var(--km-surface);
+        border-right: var(--km-border);
+        visibility: visible !important;
+        transform: none !important;
+    }
+}
+
+.sidebar-brand {
+    padding: 1.125rem 1.25rem;
+    border-bottom: var(--km-border);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--km-ink);
+}
+
+.brand-mark {
+    width: 38px;
+    height: 38px;
+    border: var(--km-border);
+    border-radius: 6px;
+    background-color: var(--km-accent);
+    box-shadow: var(--km-shadow-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.sidebar-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--km-muted);
+    padding: 0 0.75rem;
+    margin-bottom: 0.45rem;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding: 0.6rem 0.85rem;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    color: var(--km-ink);
+    font-weight: 600;
+    font-size: 0.92rem;
+    text-decoration: none;
+    transition: background-color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.sidebar-link:hover {
+    background-color: var(--km-surface-subtle);
+    border-color: var(--km-ink);
+    color: var(--km-ink);
+}
+
+.sidebar-link.active {
+    background-color: var(--km-accent);
+    border-color: var(--km-ink);
+    box-shadow: var(--km-shadow-sm);
+    color: var(--km-ink);
+    font-weight: 700;
+}
+
+.sidebar-link .module-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.12rem 0.4rem;
+    border: 1.5px solid var(--km-ink);
+    border-radius: 4px;
+    background-color: var(--km-surface);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 1rem 1.25rem;
+    border-top: var(--km-border);
+    background-color: var(--km-surface-subtle);
+}
+
+.app-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-topbar {
+    min-height: 64px;
+    background-color: var(--km-surface);
+    border-bottom: var(--km-border);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+.app-content {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+@media (max-width: 575.98px) {
+    .app-topbar {
+        padding: 0.75rem 1rem;
+    }
+
+    .app-content {
+        padding: 1rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Bootstrap Cards & Stat Cards
+   -------------------------------------------------------------------------- */
+.card {
+    background-color: var(--km-surface);
+    border: var(--km-border);
+    border-radius: 8px;
+    box-shadow: var(--km-shadow);
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: var(--km-surface-subtle);
+    border-bottom: var(--km-border);
+    padding: 0.9rem 1.25rem;
+    font-weight: 700;
+}
+
+.card-footer {
+    background-color: var(--km-surface-subtle);
+    border-top: var(--km-border);
+    padding: 0.85rem 1.25rem;
+}
+
+.stat-card {
+    background-color: var(--km-surface);
+    border: var(--km-border);
+    border-radius: 8px;
+    box-shadow: var(--km-shadow);
+    padding: 1.15rem 1.25rem;
+    height: 100%;
+}
+
+.stat-icon {
+    width: 42px;
+    height: 42px;
+    border: var(--km-border);
+    border-radius: 6px;
+    background-color: var(--km-accent);
+    box-shadow: var(--km-shadow-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    color: var(--km-ink);
+    flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Bootstrap Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+    border: var(--km-border);
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.12s ease;
+}
+
+.btn-sm {
+    padding: 0.32rem 0.7rem;
+    font-size: 0.82rem;
+}
+
+.btn-lg {
+    padding: 0.68rem 1.35rem;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: var(--km-accent);
+    border-color: var(--km-ink);
+    color: var(--km-ink);
+    box-shadow: var(--km-shadow-sm);
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+    background-color: var(--km-accent-hover);
+    border-color: var(--km-ink);
+    color: var(--km-ink);
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--km-ink);
+}
+
+.btn-primary:active {
+    background-color: var(--km-accent-hover) !important;
+    border-color: var(--km-ink) !important;
+    color: var(--km-ink) !important;
+    transform: translate(2px, 2px);
+    box-shadow: none !important;
+}
+
+.btn-secondary,
+.btn-light,
+.btn-outline-dark {
+    background-color: var(--km-surface);
+    border-color: var(--km-ink);
+    color: var(--km-ink);
+    box-shadow: var(--km-shadow-sm);
+}
+
+.btn-secondary:hover,
+.btn-light:hover,
+.btn-outline-dark:hover,
+.btn-secondary:focus-visible,
+.btn-outline-dark:focus-visible {
+    background-color: #F4F4F5;
+    border-color: var(--km-ink);
+    color: var(--km-ink);
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--km-ink);
+}
+
+.btn-dark {
+    background-color: var(--km-ink);
+    border-color: var(--km-ink);
+    color: #FFFFFF;
+    box-shadow: 2px 2px 0px var(--km-accent);
+}
+
+.btn-dark:hover {
+    background-color: #27272A;
+    border-color: var(--km-ink);
+    color: #FFFFFF;
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--km-accent);
+}
+
+.btn-danger {
+    background-color: #FEE2E2;
+    border-color: var(--km-ink);
+    color: #991B1B;
+    box-shadow: var(--km-shadow-sm);
+}
+
+.btn-danger:hover {
+    background-color: #FECACA;
+    border-color: var(--km-ink);
+    color: #7F1D1D;
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--km-ink);
+}
+
+.btn-success {
+    background-color: #DCFCE7;
+    border-color: var(--km-ink);
+    color: #166534;
+    box-shadow: var(--km-shadow-sm);
+}
+
+.btn-success:hover {
+    background-color: #BBF7D0;
+    border-color: var(--km-ink);
+    color: #14532D;
+}
+
+.btn-warning {
+    background-color: #FEF3C7;
+    border-color: var(--km-ink);
+    color: #92400E;
+    box-shadow: var(--km-shadow-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Bootstrap Forms
+   -------------------------------------------------------------------------- */
+.form-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--km-ink);
+    margin-bottom: 0.35rem;
+}
+
+.form-control,
+.form-select {
+    background-color: var(--km-surface);
+    border: var(--km-border);
+    border-radius: 6px;
+    color: var(--km-ink);
+    padding: 0.55rem 0.85rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--km-surface);
+    border-color: var(--km-ink);
+    color: var(--km-ink);
+    box-shadow: 2px 2px 0px var(--km-accent);
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: #DC2626;
+    box-shadow: 2px 2px 0px #FCA5A5;
+}
+
+.input-group-text {
+    background-color: var(--km-surface-subtle);
+    border: var(--km-border);
+    color: var(--km-ink);
+    font-weight: 600;
+}
+
+.form-check-input {
+    border: var(--km-border);
+    width: 1.15em;
+    height: 1.15em;
+}
+
+.form-check-input:checked {
+    background-color: var(--km-ink);
+    border-color: var(--km-ink);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(250, 204, 21, 0.45);
+    border-color: var(--km-ink);
+}
+
+/* --------------------------------------------------------------------------
+   Bootstrap Tables
+   -------------------------------------------------------------------------- */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-hover-bg: #FEFCE8;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+.table > thead > tr > th {
+    background-color: var(--km-surface-subtle);
+    border-bottom: var(--km-border);
+    border-top: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--km-muted);
+    padding: 0.85rem 1rem;
+    white-space: nowrap;
+}
+
+.table > tbody > tr > td {
+    border-bottom: 1px solid var(--km-border-soft);
+    padding: 0.9rem 1rem;
+}
+
+.table > tbody > tr:last-child > td {
+    border-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Badges, Alerts, Modals & Pagination
+   -------------------------------------------------------------------------- */
+.badge {
+    border: 1.5px solid var(--km-ink);
+    border-radius: 5px;
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+    font-size: 0.75rem;
+}
+
+.badge.text-bg-primary {
+    background-color: var(--km-accent) !important;
+    color: var(--km-ink) !important;
+}
+
+.badge.text-bg-success {
+    background-color: #DCFCE7 !important;
+    color: #166534 !important;
+}
+
+.badge.text-bg-warning {
+    background-color: #FEF3C7 !important;
+    color: #92400E !important;
+}
+
+.badge.text-bg-danger {
+    background-color: #FEE2E2 !important;
+    color: #991B1B !important;
+}
+
+.badge.text-bg-info {
+    background-color: #E0F2FE !important;
+    color: #075985 !important;
+}
+
+.badge.text-bg-secondary,
+.badge.text-bg-light {
+    background-color: #F4F4F5 !important;
+    color: var(--km-ink) !important;
+}
+
+.alert {
+    border: var(--km-border);
+    border-radius: 8px;
+    box-shadow: var(--km-shadow-sm);
+    color: var(--km-ink);
+    font-weight: 500;
+}
+
+.alert-success {
+    background-color: #DCFCE7;
+}
+
+.alert-danger {
+    background-color: #FEE2E2;
+}
+
+.alert-warning {
+    background-color: #FEF3C7;
+}
+
+.alert-info {
+    background-color: #E0F2FE;
+}
+
+.modal-content {
+    border: var(--km-border);
+    border-radius: 10px;
+    box-shadow: 4px 4px 0px var(--km-ink);
+}
+
+.modal-header {
+    background-color: var(--km-surface-subtle);
+    border-bottom: var(--km-border);
+}
+
+.modal-footer {
+    border-top: var(--km-border);
+    background-color: var(--km-surface-subtle);
+}
+
+.pagination {
+    gap: 0.3rem;
+}
+
+.page-link {
+    border: var(--km-border);
+    border-radius: 6px !important;
+    color: var(--km-ink);
+    font-weight: 600;
+    background-color: var(--km-surface);
+}
+
+.page-link:hover {
+    background-color: #F4F4F5;
+    border-color: var(--km-ink);
+    color: var(--km-ink);
+}
+
+.page-item.active .page-link {
+    background-color: var(--km-accent);
+    border-color: var(--km-ink);
+    color: var(--km-ink);
+    box-shadow: var(--km-shadow-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Guest / Login Page Accent Panel
+   -------------------------------------------------------------------------- */
+.login-brand-panel {
+    background-color: var(--km-accent);
+    border-bottom: var(--km-border);
+}
+
+@media (min-width: 992px) {
+    .login-brand-panel {
+        border-bottom: 0;
+        border-right: var(--km-border);
+    }
+}
