@@ -13,7 +13,7 @@
                         KM
                     </span>
                     <div>
-                        <div class="fw-bold lh-sm">KosManage</div>
+                  <div class="fw-bold lh-sm">KosManage</div>
                         <div class="small" style="opacity: 0.8;">Manajemen Kos &amp; Properti</div>
                     </div>
                 </div>
